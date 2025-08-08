@@ -20,4 +20,12 @@ void main() {
   test('returns sum when numbers are separated by new lines', () {
     expect(add('1\n2\n3'), equals(6));
   });
+
+  test('supports custom delimiter ;', () {
+    expect(add("//;\n1;2"), equals(3));
+  });
+
+  test('supports custom delimiter |', () {
+    expect(add("//|\n4|5|6"), equals(15));
+  });
 }
