@@ -43,7 +43,7 @@ void main() {
   });
   test('numbers greater than 1000 are ignored', () {
     expect(add("2,1001"), equals(2));
-    expect(add("1000,2"), equals(1002)); // 1000 is allowed
-    expect(add("1234,1,1001"), equals(1)); // 1234 & 1001 ignored
+    expect(add("1000,2"), equals(1002));
+    expect(add("1234,1,1001"), equals(1));
   });
 }
