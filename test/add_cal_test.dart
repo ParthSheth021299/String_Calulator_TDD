@@ -36,7 +36,7 @@ void main() {
         predicate(
           (e) =>
               e is Exception &&
-              e.toString().contains("negatives not allowed: -2, -7"),
+              e.toString().contains("Negatives not allowed: -2, -7"),
         ),
       ),
     );
