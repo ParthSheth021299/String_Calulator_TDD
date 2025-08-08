@@ -1,33 +1,33 @@
 int add(String numbers) {
+  // Handles empty or whitespace-only string
   if (numbers.trim().isEmpty) return 0;
 
   String delimiter = ',';
-  String numString = numbers;
 
-  // Check for custom delimiter at start
+  // Support custom delimiter syntax: //;\n1;2
   if (numbers.startsWith('//')) {
-    final parts = numbers.split('\n');
-    delimiter = parts.first.substring(2); // can be multi-char
-    numString = parts.sublist(1).join('\n');
+    final delimiterLineEnd = numbers.indexOf('\n');
+    delimiter = numbers.substring(2, delimiterLineEnd);
+    numbers = numbers.substring(delimiterLineEnd + 1);
   }
 
-  // Replace \n with delimiter for uniform splitting
-  final unified = numString.replaceAll('\n', delimiter);
-  final parts = unified.split(delimiter);
+  // Replace new lines with delimiter and split
+  final parts = numbers.replaceAll('\n', delimiter).split(delimiter);
 
+  var negatives = <int>[];
   var sum = 0;
-  final negatives = <int>[];
 
   for (final p in parts) {
     final trimmed = p.trim();
     if (trimmed.isEmpty) continue;
-    final value = int.parse(trimmed);
 
-    if (value < 0) {
-      negatives.add(value);
+    final numValue = int.parse(trimmed);
+
+    if (numValue < 0) {
+      negatives.add(numValue);
+    } else if (numValue <= 1000) {
+      sum += numValue; // ✅ ignore numbers > 1000
     }
-
-    sum += value;
   }
 
   if (negatives.isNotEmpty) {
