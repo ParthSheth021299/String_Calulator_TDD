@@ -28,4 +28,17 @@ void main() {
   test('supports custom delimiter |', () {
     expect(add("//|\n4|5|6"), equals(15));
   });
+
+  test('throws exception for negative numbers with custom delimiter', () {
+    expect(
+      () => add("//;\n1;-2;4;-7"),
+      throwsA(
+        predicate(
+          (e) =>
+              e is Exception &&
+              e.toString().contains("negatives not allowed: -2, -7"),
+        ),
+      ),
+    );
+  });
 }

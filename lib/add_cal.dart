@@ -1,29 +1,37 @@
 int add(String numbers) {
   if (numbers.trim().isEmpty) return 0;
 
-  String delimiterPattern = '[,\n]'; // default delimiters: comma or newline
-  String numberString = numbers;
+  String delimiter = ',';
+  String numString = numbers;
 
-  // Check for custom delimiter at the start
+  // Check for custom delimiter at start
   if (numbers.startsWith('//')) {
-    final delimiterEndIndex = numbers.indexOf('\n');
-    if (delimiterEndIndex != -1) {
-      final customDelimiter = numbers.substring(
-        2,
-        delimiterEndIndex,
-      ); // e.g., ";"
-      delimiterPattern = RegExp.escape(customDelimiter);
-      numberString = numbers.substring(delimiterEndIndex + 1);
-    }
+    final parts = numbers.split('\n');
+    delimiter = parts.first.substring(2); // can be multi-char
+    numString = parts.sublist(1).join('\n');
   }
 
-  final parts = numberString.split(RegExp(delimiterPattern));
+  // Replace \n with delimiter for uniform splitting
+  final unified = numString.replaceAll('\n', delimiter);
+  final parts = unified.split(delimiter);
+
   var sum = 0;
+  final negatives = <int>[];
 
   for (final p in parts) {
     final trimmed = p.trim();
     if (trimmed.isEmpty) continue;
-    sum += int.parse(trimmed);
+    final value = int.parse(trimmed);
+
+    if (value < 0) {
+      negatives.add(value);
+    }
+
+    sum += value;
+  }
+
+  if (negatives.isNotEmpty) {
+    throw Exception('negatives not allowed: ${negatives.join(', ')}');
   }
 
   return sum;
