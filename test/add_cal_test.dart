@@ -16,4 +16,8 @@ void main() {
   test('returns sum for two comma-separated numbers', () {
     expect(add('1,2'), equals(3));
   });
+
+  test('returns sum when numbers are separated by new lines', () {
+    expect(add('1\n2\n3'), equals(6));
+  });
 }
