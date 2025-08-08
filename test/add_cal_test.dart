@@ -46,4 +46,8 @@ void main() {
     expect(add("1000,2"), equals(1002));
     expect(add("1234,1,1001"), equals(1));
   });
+
+  test('should ignore numbers greater than 1000', () {
+    expect(add('//[***]\n2***1001***3'), equals(5));
+  });
 }

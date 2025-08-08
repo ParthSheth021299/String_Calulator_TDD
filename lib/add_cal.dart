@@ -1,37 +1,54 @@
 int add(String numbers) {
-  // Handles empty or whitespace-only string
   if (numbers.trim().isEmpty) return 0;
 
   String delimiter = ',';
+  final delimiters = <String>[];
 
-  // Support custom delimiter syntax: //;\n1;2
+  // Custom delimiter(s) handling
   if (numbers.startsWith('//')) {
     final delimiterLineEnd = numbers.indexOf('\n');
-    delimiter = numbers.substring(2, delimiterLineEnd);
+    var delimiterPart = numbers.substring(2, delimiterLineEnd);
+
+    if (delimiterPart.startsWith('[') && delimiterPart.endsWith(']')) {
+      // Multiple delimiters case: split by ']['
+      final rawDelimiters = delimiterPart
+          .substring(1, delimiterPart.length - 1)
+          .split('][');
+      delimiters.addAll(rawDelimiters);
+    } else {
+      // Single delimiter
+      delimiters.add(delimiterPart);
+    }
+
     numbers = numbers.substring(delimiterLineEnd + 1);
+  } else {
+    delimiters.add(delimiter);
   }
 
-  // Replace new lines with delimiter and split
-  final parts = numbers.replaceAll('\n', delimiter).split(delimiter);
+  // Always allow newline as delimiter
+  delimiters.add('\n');
 
-  var negatives = <int>[];
+  // Create regex to split by all delimiters
+  final pattern = RegExp(delimiters.map(RegExp.escape).join('|'));
+  final parts = numbers.split(pattern);
+
+  final negatives = <int>[];
   var sum = 0;
 
   for (final p in parts) {
     final trimmed = p.trim();
     if (trimmed.isEmpty) continue;
+    final value = int.parse(trimmed);
 
-    final numValue = int.parse(trimmed);
-
-    if (numValue < 0) {
-      negatives.add(numValue);
-    } else if (numValue <= 1000) {
-      sum += numValue; // ✅ ignore numbers > 1000
+    if (value < 0) {
+      negatives.add(value);
+    } else if (value <= 1000) {
+      sum += value;
     }
   }
 
   if (negatives.isNotEmpty) {
-    throw Exception('negatives not allowed: ${negatives.join(', ')}');
+    throw Exception('Negatives not allowed: ${negatives.join(', ')}');
   }
 
   return sum;
