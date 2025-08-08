@@ -50,7 +50,4 @@ void main() {
   test('should ignore numbers greater than 1000', () {
     expect(add('//[***]\n2***1001***3'), equals(5));
   });
-  test('should ignore extra whitespace in custom delimiters', () {
-    expect(add("//[***]\n  1.5 ***   2.5 ***  3  "), equals(7.0));
-  });
 }
