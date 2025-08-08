@@ -1,55 +1,44 @@
-int add(String numbers) {
+num add(String numbers) {
   if (numbers.trim().isEmpty) return 0;
 
-  String delimiter = ',';
-  final delimiters = <String>[];
+  List<String> delimiters = [',', '\n']; // default delimiters
+  String numSection = numbers.trim();
 
-  // Custom delimiter(s) handling
-  if (numbers.startsWith('//')) {
-    final delimiterLineEnd = numbers.indexOf('\n');
-    var delimiterPart = numbers.substring(2, delimiterLineEnd);
+  // Detect custom delimiter format
+  if (numSection.startsWith('//')) {
+    final delimiterSection = numSection.substring(2, numSection.indexOf('\n'));
+    numSection = numSection.substring(numSection.indexOf('\n') + 1).trim();
 
-    if (delimiterPart.startsWith('[') && delimiterPart.endsWith(']')) {
-      // Multiple delimiters case: split by ']['
-      final rawDelimiters = delimiterPart
-          .substring(1, delimiterPart.length - 1)
-          .split('][');
-      delimiters.addAll(rawDelimiters);
+    // Check for multiple delimiters in square brackets
+    final delimiterPattern = RegExp(r'\[(.*?)\]');
+    final matches = delimiterPattern.allMatches(delimiterSection);
+
+    if (matches.isNotEmpty) {
+      delimiters.addAll(matches.map((m) => RegExp.escape(m.group(1)!)));
     } else {
-      // Single delimiter
-      delimiters.add(delimiterPart);
-    }
-
-    numbers = numbers.substring(delimiterLineEnd + 1);
-  } else {
-    delimiters.add(delimiter);
-  }
-
-  // Always allow newline as delimiter
-  delimiters.add('\n');
-
-  // Create regex to split by all delimiters
-  final pattern = RegExp(delimiters.map(RegExp.escape).join('|'));
-  final parts = numbers.split(pattern);
-
-  final negatives = <int>[];
-  var sum = 0;
-
-  for (final p in parts) {
-    final trimmed = p.trim();
-    if (trimmed.isEmpty) continue;
-    final value = int.parse(trimmed);
-
-    if (value < 0) {
-      negatives.add(value);
-    } else if (value <= 1000) {
-      sum += value;
+      // Single character delimiter without brackets
+      delimiters.add(RegExp.escape(delimiterSection));
     }
   }
 
+  // Build regex pattern for splitting numbers, allowing spaces around them
+  final splitPattern = RegExp(delimiters.join('|'));
+
+  // Split & clean whitespace
+  final numList = numSection
+      .split(splitPattern)
+      .map((e) => e.trim())
+      .where((e) => e.isNotEmpty);
+
+  // Convert to num (to support int & double)
+  final parsedNumbers = numList.map(num.parse).toList();
+
+  // Check for negatives
+  final negatives = parsedNumbers.where((n) => n < 0).toList();
   if (negatives.isNotEmpty) {
     throw Exception('Negatives not allowed: ${negatives.join(', ')}');
   }
 
-  return sum;
+  // Ignore numbers greater than 1000
+  return parsedNumbers.where((n) => n <= 1000).fold<num>(0, (a, b) => a + b);
 }
