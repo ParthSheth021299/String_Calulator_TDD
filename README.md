@@ -48,4 +48,8 @@ This process ensured:
 - Implementation is driven by requirements.
 - Clean and maintainable structure.
 
+
+![App Demo](working_string_calculator_tdd.gif)
+
+
 ---
